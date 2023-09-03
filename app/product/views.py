@@ -18,7 +18,7 @@ class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [CustomSearchFilter]
-    search_fields = ['name',]
+    search_fields = ['name','code']
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

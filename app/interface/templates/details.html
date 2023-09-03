@@ -1,0 +1,6 @@
+{% if product %}
+    <h2>{{product.name}}</h2>
+    {{product.code}}
+{% else %}
+    <p>Désolé nous n'avons pas trouvé de produit correspondant à votre recherche.</p>
+{% endif %}

@@ -1,11 +1,11 @@
 <script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
-<form method="GET">
-    {% csrf_token %}
-    <input class="search-bar" name="search" placeholder="Chercher un produit"
-        hx-get="/api/products/?UI=true"
-        hx-trigger="keyup changed delay:500ms, search"
-        hx-target="#search-results">
-</form>
+
+{% csrf_token %}
+<input class="search-bar" name="search" placeholder="Chercher un produit"
+    hx-get="/api/products/?UI=true"
+    hx-trigger="keyup changed delay:500ms, search"
+    hx-target="#search-results">
+
 <table class="table">
     <tbody id="search-results" hx-swap="innerHTML">
     </tbody>

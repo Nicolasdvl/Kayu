@@ -1,3 +1,12 @@
+<ul>
 {% for product in products %}
-    {{product.name}}
+
+    <li>
+        <a href="{% url 'details' product.code %}">
+            <div>{{ product.name }} {{product.brand}}</div>
+    
+        </a>
+    </li>
+
 {% endfor %}
+</ul>
