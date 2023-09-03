@@ -9,7 +9,6 @@ from django.http import HttpResponse
 
 class CustomSearchFilter(filters.SearchFilter):
     def get_search_fields(self, view, request):
-        print(request.query_params)
         if request.query_params.get('fields'):
             fields = request.query_params.get('fields').split(',')
             return [field for field in fields if field in [field.name for field in Product._meta.fields]]
@@ -25,7 +24,6 @@ class ProductList(generics.ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         if 'UI' in request.query_params :
             result = []
-            print(queryset)
             content = render(request, 'result.html', context={'products': queryset})
             return HttpResponse(content, content_type='text/html')
         serializer = self.get_serializer(queryset, many=True)
