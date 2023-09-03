@@ -1,8 +1,10 @@
 
-from rest_framework import generics
+from rest_framework import generics, filters
 from product.models import Product, Category
 from product.serializers import ProductSerializer, CategorySerializer
-from rest_framework import filters
+from rest_framework.response import Response
+from django.shortcuts import render
+from django.http import HttpResponse
 
 
 class CustomSearchFilter(filters.SearchFilter):
@@ -19,6 +21,15 @@ class ProductList(generics.ListAPIView):
     filter_backends = [CustomSearchFilter]
     search_fields = ['name',]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        if 'UI' in request.query_params :
+            result = []
+            print(queryset)
+            content = render(request, 'result.html', context={'products': queryset})
+            return HttpResponse(content, content_type='text/html')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
