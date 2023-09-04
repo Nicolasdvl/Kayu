@@ -3,8 +3,10 @@ from rest_framework import generics, filters
 from product.models import Product, Category
 from product.serializers import ProductSerializer, CategorySerializer
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.db.models import Count
 
 
 class CustomSearchFilter(filters.SearchFilter):
@@ -29,9 +31,28 @@ class ProductList(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
+class ProductDetail(generics.ListAPIView):
     serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        code = self.kwargs['code']
+        return Product.objects.filter(code=code)
+
+
+class ProductSubstitutes(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    ordering = ['nutriscore']
+
+    def get_queryset(self):
+        code = self.request.query_params.get('product')
+        categories = Category.objects.filter(products=code).annotate(num_products=Count("products")).order_by("num_products")
+        category = categories[0]
+        products = Product.objects.filter(category=category)
+        return products
+    
+    def filter_queryset(self, queryset):
+        return queryset.order_by("nutriscore")
+
 
 class CategoryList(generics.ListAPIView):
     queryset = Category.objects.all()
