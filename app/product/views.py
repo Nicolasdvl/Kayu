@@ -1,5 +1,5 @@
 
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
 from product.models import Product, Category
 from product.serializers import ProductSerializer, CategorySerializer
 from rest_framework.response import Response
@@ -43,9 +43,17 @@ class ProductSubstitutes(generics.ListAPIView):
     serializer_class = ProductSerializer
     ordering = ['nutriscore']
 
+    def list(self, request, *args, **kwargs):
+        self.code = self.request.query_params.get('product', None)
+        if self.code is None:
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
     def get_queryset(self):
-        code = self.request.query_params.get('product')
-        categories = Category.objects.filter(products=code).annotate(num_products=Count("products")).order_by("num_products")
+        categories = Category.objects.filter(products=self.code).annotate(num_products=Count("products")).order_by("num_products")
         category = categories[::-1][0]
         products = Product.objects.filter(category=category)
         return products
