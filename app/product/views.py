@@ -46,7 +46,7 @@ class ProductSubstitutes(generics.ListAPIView):
     def get_queryset(self):
         code = self.request.query_params.get('product')
         categories = Category.objects.filter(products=code).annotate(num_products=Count("products")).order_by("num_products")
-        category = categories[0]
+        category = categories[::-1][0]
         products = Product.objects.filter(category=category)
         return products
     
