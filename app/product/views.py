@@ -1,12 +1,13 @@
 
-from rest_framework import generics, filters, status, renderers
+from rest_framework import generics, filters, status
 from product.models import Product, Category
 from product.serializers import ProductSerializer, CategorySerializer
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer, BrowsableAPIRenderer
 from django.db.models import Count
 
 
-class UIRenderer(renderers.TemplateHTMLRenderer):
+class UIRenderer(TemplateHTMLRenderer):
     media_type = 'text/html'
     format = 'ui'
 
@@ -22,12 +23,12 @@ class ProductList(generics.ListAPIView):
     serializer_class = ProductSerializer
     filter_backends = [CustomSearchFilter]
     search_fields = ['name','code']
-    renderer_classes = [UIRenderer]
+    renderer_classes = [UIRenderer, JSONRenderer, BrowsableAPIRenderer]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         if request.accepted_renderer.format == 'ui':
-            return Response(data={'products':queryset}, template_name='result.html')
+            return Response(data={'products':queryset}, template_name='product-list.html')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
