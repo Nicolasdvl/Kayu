@@ -44,7 +44,7 @@ class ProductSubstitutes(generics.ListAPIView):
     ordering = ['nutriscore']
 
     def list(self, request, *args, **kwargs):
-        self.code = self.request.query_params.get('product', None)
+        self.code = request.query_params.get('product', None)
         if self.code is None:
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         queryset = self.filter_queryset(self.get_queryset())
