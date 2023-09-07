@@ -1,13 +1,14 @@
 
-from rest_framework import generics, filters, status
+from rest_framework import generics, filters, status, renderers
 from product.models import Product, Category
 from product.serializers import ProductSerializer, CategorySerializer
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.db.models import Count
 
+
+class UIRenderer(renderers.TemplateHTMLRenderer):
+    media_type = 'text/html'
+    format = 'ui'
 
 class CustomSearchFilter(filters.SearchFilter):
     def get_search_fields(self, view, request):
@@ -21,13 +22,12 @@ class ProductList(generics.ListAPIView):
     serializer_class = ProductSerializer
     filter_backends = [CustomSearchFilter]
     search_fields = ['name','code']
+    renderer_classes = [UIRenderer]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        if 'UI' in request.query_params :
-            result = []
-            content = render(request, 'result.html', context={'products': queryset})
-            return HttpResponse(content, content_type='text/html')
+        if request.accepted_renderer.format == 'ui':
+            return Response(data={'products':queryset}, template_name='result.html')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -50,7 +50,6 @@ class ProductSubstitutes(generics.ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
 
     def get_queryset(self):
         categories = Category.objects.filter(products=self.code).annotate(num_products=Count("products")).order_by("num_products")
