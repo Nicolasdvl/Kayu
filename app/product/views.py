@@ -43,12 +43,15 @@ class ProductDetail(generics.ListAPIView):
 class ProductSubstitutes(generics.ListAPIView):
     serializer_class = ProductSerializer
     ordering = ['nutriscore']
+    renderer_classes = [UIRenderer, JSONRenderer, BrowsableAPIRenderer]
 
     def list(self, request, *args, **kwargs):
         self.code = request.query_params.get('product', None)
         if self.code is None:
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         queryset = self.filter_queryset(self.get_queryset())
+        if request.accepted_renderer.format == 'ui':
+            return Response(data={'substitutes':queryset}, template_name='substitutes-list.html')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
