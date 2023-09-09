@@ -2,7 +2,7 @@
 
 {% csrf_token %}
 <input class="search-bar" name="search" placeholder="Chercher un produit"
-    hx-get="/api/products/?UI=true"
+    hx-get="/api/products.ui"
     hx-trigger="keyup changed delay:500ms, search"
     hx-target="#search-results">
 

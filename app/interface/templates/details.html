@@ -2,14 +2,10 @@
 <script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
 <div class="product-card">
 <h2>{{product.name}}</h2>
-{% for cat in product.category_set.all %}
-    {{cat.name}}
-{% endfor %}
 </div>
 <input name="product" hidden="true" value={{product.code}}
     hx-trigger="load" 
-    hx-get="/api/substitutes/" 
-    hx-vals='{"UI":"true"}' 
+    hx-get="/api/substitutes.ui" 
     hx-target="#subs">
 <div id="subs"></div>
 {% else %}

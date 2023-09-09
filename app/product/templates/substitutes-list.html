@@ -1,0 +1,12 @@
+<ul>
+{% for substitute in substitutes %}
+
+    <li>
+        <a href="{% url 'details' substitute.code %}">
+            <div>{{ substitute.name }} {{ substitute.brand }}</div>
+    
+        </a>
+    </li>
+
+{% endfor %}
+</ul>
